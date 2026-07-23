@@ -36,6 +36,14 @@ public partial class MainWindow : Window
         ProcessGrid.Columns[0].SortDirection = ListSortDirection.Ascending;
     }
 
+    private void DetailTextBox_ToolTipOpening(object sender, ToolTipEventArgs e)
+    {
+        // The tooltip mimics an in-place widening of the box, so it is only useful when
+        // the text is actually cut off.
+        if (sender is TextBox box && box.ExtentWidth <= box.ViewportWidth + 1)
+            e.Handled = true;
+    }
+
     private void ProcessGrid_Sorting(object sender, DataGridSortingEventArgs e)
     {
         e.Handled = true;

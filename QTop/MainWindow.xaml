@@ -21,6 +21,24 @@
             <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
             <Setter Property="Margin" Value="0,0,0,1" />
         </Style>
+        <!-- Overlays the textbox in-place so a truncated value appears to simply extend. -->
+        <ToolTip x:Key="DetailOverflowToolTip"
+                 x:Shared="False"
+                 Placement="Relative"
+                 HorizontalOffset="0"
+                 VerticalOffset="0"
+                 HasDropShadow="False"
+                 Background="#F9FAFB"
+                 BorderBrush="{StaticResource CardBorderBrush}"
+                 BorderThickness="1"
+                 Padding="5,2"
+                 MinHeight="23"
+                 VerticalContentAlignment="Center"
+                 FontFamily="Segoe UI"
+                 FontSize="12"
+                 Foreground="{StaticResource TextBrush}"
+                 Content="{Binding PlacementTarget.Text, RelativeSource={RelativeSource Self}}" />
+
         <Style x:Key="DetailTextBox" TargetType="TextBox">
             <Setter Property="IsReadOnly" Value="True" />
             <Setter Property="FontSize" Value="12" />
@@ -32,14 +50,13 @@
             <Setter Property="MinHeight" Value="23" />
             <Setter Property="TextWrapping" Value="NoWrap" />
             <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
-            <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}" />
+            <Setter Property="ToolTipService.InitialShowDelay" Value="0" />
+            <Setter Property="ToolTipService.BetweenShowDelay" Value="0" />
+            <Setter Property="ToolTipService.ShowDuration" Value="60000" />
+            <Setter Property="ToolTip" Value="{StaticResource DetailOverflowToolTip}" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}" />
-            <Style.Triggers>
-                <Trigger Property="Text" Value="">
-                    <Setter Property="ToolTip" Value="{x:Null}" />
-                </Trigger>
-            </Style.Triggers>
+            <EventSetter Event="ToolTipOpening" Handler="DetailTextBox_ToolTipOpening" />
         </Style>
 
         <Style x:Key="IconOnlyButton" TargetType="Button">
