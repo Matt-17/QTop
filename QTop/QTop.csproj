@@ -22,4 +22,8 @@
     <ProjectReference Include="..\QTop.Core\QTop.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="Assets\qtop-logo.png" />
+  </ItemGroup>
+
 </Project>

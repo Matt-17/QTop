@@ -395,9 +395,12 @@ public sealed class MainWindowViewModel : ObservableObject
         foreach (ProcessRowViewModel root in _rootRows)
             ComputeSubtreeMatches(root);
 
+        // While a search is active, matches under collapsed parents must still be reachable,
+        // so the tree is traversed as if fully expanded.
+        bool forceExpand = !string.IsNullOrWhiteSpace(SearchText);
         var visible = new List<ProcessRowViewModel>(matchCount + 16);
         foreach (ProcessRowViewModel root in _rootRows)
-            AppendVisibleRows(root, 0, visible);
+            AppendVisibleRows(root, 0, visible, forceExpand);
 
         if (!SameSequence(visible))
             Processes.ReplaceAll(visible);
@@ -417,7 +420,7 @@ public sealed class MainWindowViewModel : ObservableObject
         return matches;
     }
 
-    private static void AppendVisibleRows(ProcessRowViewModel row, int depth, List<ProcessRowViewModel> visible)
+    private static void AppendVisibleRows(ProcessRowViewModel row, int depth, List<ProcessRowViewModel> visible, bool forceExpand)
     {
         if (!row.SubtreeMatches)
             return;
@@ -435,11 +438,11 @@ public sealed class MainWindowViewModel : ObservableObject
 
         row.HasVisibleChildren = hasVisibleChildren;
         visible.Add(row);
-        if (!row.IsExpanded || !hasVisibleChildren)
+        if ((!row.IsExpanded && !forceExpand) || !hasVisibleChildren)
             return;
 
         foreach (ProcessRowViewModel child in row.Children)
-            AppendVisibleRows(child, depth + 1, visible);
+            AppendVisibleRows(child, depth + 1, visible, forceExpand);
     }
 
     private bool SameSequence(List<ProcessRowViewModel> visible)

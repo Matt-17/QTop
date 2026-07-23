@@ -11,7 +11,7 @@ public sealed class ProcessRowViewModel : ObservableObject
     private int _nameGroupCount;
     private int _level;
     private bool _hasVisibleChildren;
-    private bool _isExpanded = true;
+    private bool _isExpanded;
 
     public ProcessRowViewModel(ProcessSnapshot snapshot, int nameGroupCount)
     {

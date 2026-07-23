@@ -38,9 +38,11 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Border Width="64" Height="64" CornerRadius="12" Background="White" BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="1">
-                <TextBlock Text="QT" FontSize="22" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </Border>
+            <Image Width="64"
+                   Height="64"
+                   Source="/Assets/qtop-logo.png"
+                   RenderOptions.BitmapScalingMode="HighQuality"
+                   VerticalAlignment="Center" />
 
             <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
                 <TextBlock Text="QTop" FontSize="24" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" />
@@ -54,10 +56,10 @@
                 <TextBlock Text="About" Style="{StaticResource SectionTitle}" Margin="0,0,0,6" />
                 <TextBlock Margin="0,8,0,0"
                            Style="{StaticResource Hint}"
-                           Text="QTop lists Windows processes with elevated detail access, grouped categories, service enrichment, filtering, and confirmation-based process termination." />
+                           Text="QTop lists Windows processes as an expandable parent/child tree with elevated detail access, category filter pills, live CPU usage, and safe process termination." />
 
                 <TextBlock Text="Included" Style="{StaticResource SectionTitle}" Margin="0,18,0,0" />
-                <TextBlock Margin="0,8,0,0" Style="{StaticResource Hint}" Text="Grouped process grid, protected/system filtering, process details, service names, executable metadata, process icons, refresh cadence, graceful close for apps, and force kill reporting." />
+                <TextBlock Margin="0,8,0,0" Style="{StaticResource Hint}" Text="Process tree, category pills with counts and CPU %, search, protected/system filtering, process details, service names, executable metadata, process icons, graceful close for apps, and force kill with optional confirmation." />
 
                 <Grid Margin="0,18,0,0">
                     <Grid.ColumnDefinitions>
