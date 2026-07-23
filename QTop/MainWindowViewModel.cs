@@ -10,6 +10,8 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly List<ProcessRowViewModel> _allRows = [];
     private readonly List<ProcessRowViewModel> _rootRows = [];
     private string _searchText = string.Empty;
+    private string _sortKey = "ProcessName";
+    private bool _sortDescending;
     private CategoryFilterOption _selectedCategoryFilter = null!;
     private RefreshIntervalOption _selectedRefreshInterval = null!;
     private bool _hideProtectedSystem = true;
@@ -321,23 +323,75 @@ public sealed class MainWindowViewModel : ObservableObject
             }
         }
 
-        static int CompareByName(ProcessRowViewModel left, ProcessRowViewModel right)
-        {
-            int byName = StringComparer.OrdinalIgnoreCase.Compare(left.ProcessName, right.ProcessName);
-            return byName != 0 ? byName : left.ProcessId.CompareTo(right.ProcessId);
-        }
+        foreach (ProcessRowViewModel root in _rootRows)
+            ComputeSubtreeAggregates(root);
 
-        _rootRows.Sort((left, right) =>
-        {
-            int byCategory = left.CategorySortOrder.CompareTo(right.CategorySortOrder);
-            return byCategory != 0 ? byCategory : CompareByName(left, right);
-        });
+        SortTree();
+    }
 
+    internal void SetSort(string? sortKey, bool descending)
+    {
+        if (string.IsNullOrEmpty(sortKey))
+            return;
+
+        _sortKey = sortKey;
+        _sortDescending = descending;
+        SortTree();
+        RebuildVisibleRows();
+    }
+
+    private void SortTree()
+    {
+        Comparison<ProcessRowViewModel> comparison = BuildComparison();
+        _rootRows.Sort(comparison);
         foreach (ProcessRowViewModel row in _allRows)
         {
             if (row.Children.Count > 1)
-                row.Children.Sort(CompareByName);
+                row.Children.Sort(comparison);
         }
+    }
+
+    private Comparison<ProcessRowViewModel> BuildComparison()
+    {
+        int direction = _sortDescending ? -1 : 1;
+        Func<ProcessRowViewModel, ProcessRowViewModel, int> primary = _sortKey switch
+        {
+            "ProcessId" => static (a, b) => a.ProcessId.CompareTo(b.ProcessId),
+            "CategorySortOrder" => static (a, b) => a.CategorySortOrder.CompareTo(b.CategorySortOrder),
+            "CpuPercent" => static (a, b) => a.SubtreeCpuPercent.CompareTo(b.SubtreeCpuPercent),
+            "CpuTime" => static (a, b) => a.SubtreeCpuTimeTicks.CompareTo(b.SubtreeCpuTimeTicks),
+            "Memory" => static (a, b) => a.SubtreeMemoryBytes.CompareTo(b.SubtreeMemoryBytes),
+            "NameGroupCount" => static (a, b) => a.NameGroupCount.CompareTo(b.NameGroupCount),
+            _ => static (a, b) => StringComparer.OrdinalIgnoreCase.Compare(a.ProcessName, b.ProcessName)
+        };
+
+        return (left, right) =>
+        {
+            int result = direction * primary(left, right);
+            if (result != 0)
+                return result;
+
+            result = StringComparer.OrdinalIgnoreCase.Compare(left.ProcessName, right.ProcessName);
+            return result != 0 ? result : left.ProcessId.CompareTo(right.ProcessId);
+        };
+    }
+
+    private static void ComputeSubtreeAggregates(ProcessRowViewModel row)
+    {
+        double cpuPercent = row.Snapshot.CpuPercent ?? 0;
+        long cpuTimeTicks = row.Snapshot.TotalProcessorTime?.Ticks ?? 0;
+        long memoryBytes = row.Snapshot.WorkingSetBytes ?? 0;
+        foreach (ProcessRowViewModel child in row.Children)
+        {
+            ComputeSubtreeAggregates(child);
+            cpuPercent += child.SubtreeCpuPercent;
+            cpuTimeTicks += child.SubtreeCpuTimeTicks;
+            memoryBytes += child.SubtreeMemoryBytes;
+        }
+
+        row.SubtreeCpuPercent = cpuPercent;
+        row.SubtreeCpuTimeTicks = cpuTimeTicks;
+        row.SubtreeMemoryBytes = memoryBytes;
     }
 
     private static bool IsInAncestorChain(ProcessRowViewModel target, ProcessRowViewModel start)

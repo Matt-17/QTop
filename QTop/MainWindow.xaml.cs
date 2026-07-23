@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using QTop.Core;
@@ -32,6 +33,27 @@ public partial class MainWindow : Window
         };
         _refreshTimer.Tick += RefreshTimer_Tick;
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
+        ProcessGrid.Columns[0].SortDirection = ListSortDirection.Ascending;
+    }
+
+    private void ProcessGrid_Sorting(object sender, DataGridSortingEventArgs e)
+    {
+        e.Handled = true;
+
+        // Metric columns start descending (biggest consumers first), text columns ascending.
+        bool descendingFirst = e.Column.SortMemberPath is "CpuPercent" or "CpuTime" or "Memory" or "NameGroupCount";
+        ListSortDirection direction = e.Column.SortDirection switch
+        {
+            ListSortDirection.Ascending => ListSortDirection.Descending,
+            ListSortDirection.Descending => ListSortDirection.Ascending,
+            _ => descendingFirst ? ListSortDirection.Descending : ListSortDirection.Ascending
+        };
+
+        foreach (DataGridColumn column in ProcessGrid.Columns)
+            column.SortDirection = null;
+
+        e.Column.SortDirection = direction;
+        _viewModel.SetSort(e.Column.SortMemberPath, direction == ListSortDirection.Descending);
     }
 
     private async void Window_Loaded(object sender, RoutedEventArgs e)

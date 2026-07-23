@@ -60,6 +60,12 @@ public sealed class ProcessRowViewModel : ObservableObject
     internal bool SubtreeMatches { get; set; }
     internal Action? ExpansionChanged { get; set; }
 
+    // Subtree aggregates (own value + all descendants), used as sort keys so a parent
+    // ranks by what its whole tree consumes.
+    internal double SubtreeCpuPercent { get; set; }
+    internal long SubtreeCpuTimeTicks { get; set; }
+    internal long SubtreeMemoryBytes { get; set; }
+
     public int Level
     {
         get => _level;

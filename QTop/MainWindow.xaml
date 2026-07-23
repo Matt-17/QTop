@@ -397,7 +397,7 @@
                               Style="{StaticResource ProcessGrid}"
                               ItemsSource="{Binding Processes}"
                               SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
-                              CanUserSortColumns="False"
+                              Sorting="ProcessGrid_Sorting"
                               ScrollViewer.HorizontalScrollBarVisibility="Auto"
                               ScrollViewer.VerticalScrollBarVisibility="Auto"
                               EnableRowVirtualization="True"
@@ -405,7 +405,7 @@
                               VirtualizingPanel.VirtualizationMode="Recycling"
                               PreviewKeyDown="ProcessGrid_PreviewKeyDown">
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="Process" Width="280" MinWidth="200">
+                            <DataGridTemplateColumn Header="Process" Width="280" MinWidth="200" SortMemberPath="ProcessName">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" Margin="{Binding IndentMargin}">
@@ -426,12 +426,12 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" Width="64" ElementStyle="{StaticResource NumberCellText}" />
-                            <DataGridTextColumn Header="Category" Binding="{Binding CategoryLabel}" Width="116" />
-                            <DataGridTextColumn Header="CPU %" Binding="{Binding CpuPercentText}" Width="70" ElementStyle="{StaticResource NumberCellText}" />
-                            <DataGridTextColumn Header="CPU time" Binding="{Binding CpuTimeText}" Width="88" ElementStyle="{StaticResource NumberCellText}" />
-                            <DataGridTextColumn Header="Memory" Binding="{Binding MemoryText}" Width="96" ElementStyle="{StaticResource NumberCellText}" />
-                            <DataGridTextColumn Header="Count" Binding="{Binding NameGroupCountText}" Width="58" ElementStyle="{StaticResource NumberCellText}" />
+                            <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" SortMemberPath="ProcessId" Width="64" ElementStyle="{StaticResource NumberCellText}" />
+                            <DataGridTextColumn Header="Category" Binding="{Binding CategoryLabel}" SortMemberPath="CategorySortOrder" Width="116" />
+                            <DataGridTextColumn Header="CPU %" Binding="{Binding CpuPercentText}" SortMemberPath="CpuPercent" Width="70" ElementStyle="{StaticResource NumberCellText}" />
+                            <DataGridTextColumn Header="CPU time" Binding="{Binding CpuTimeText}" SortMemberPath="CpuTime" Width="88" ElementStyle="{StaticResource NumberCellText}" />
+                            <DataGridTextColumn Header="Memory" Binding="{Binding MemoryText}" SortMemberPath="Memory" Width="96" ElementStyle="{StaticResource NumberCellText}" />
+                            <DataGridTextColumn Header="Count" Binding="{Binding NameGroupCountText}" SortMemberPath="NameGroupCount" Width="58" ElementStyle="{StaticResource NumberCellText}" />
                         </DataGrid.Columns>
                         <DataGrid.ContextMenu>
                             <ContextMenu>
