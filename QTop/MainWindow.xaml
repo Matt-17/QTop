@@ -395,7 +395,13 @@
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" />
-                            <TextBlock Text="{Binding StatsText}" Margin="7,0,0,0" Opacity="0.7" />
+                            <!-- Fixed width so changing digit counts never resize the pill. -->
+                            <TextBlock Text="{Binding StatsText}"
+                                       Margin="7,0,0,0"
+                                       Opacity="0.7"
+                                       Width="88"
+                                       TextTrimming="CharacterEllipsis"
+                                       Typography.NumeralAlignment="Tabular" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
