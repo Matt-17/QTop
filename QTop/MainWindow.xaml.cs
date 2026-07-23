@@ -40,14 +40,35 @@ public partial class MainWindow : Window
         _refreshTimer.Tick += RefreshTimer_Tick;
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
         ProcessGrid.Columns[0].SortDirection = ListSortDirection.Ascending;
+        Deactivated += (_, _) => DetailExpandPopup.IsOpen = false;
     }
 
-    private void DetailTextBox_ToolTipOpening(object sender, ToolTipEventArgs e)
+    private void DetailTextBox_MouseEnter(object sender, MouseEventArgs e)
     {
-        // The tooltip mimics an in-place widening of the box, so it is only useful when
-        // the text is actually cut off.
-        if (sender is TextBox box && box.ExtentWidth <= box.ViewportWidth + 1)
-            e.Handled = true;
+        // Only expand boxes whose text is actually cut off.
+        if (sender is not TextBox box || box.ExtentWidth <= box.ViewportWidth + 1)
+            return;
+
+        DetailExpandPopup.IsOpen = false;
+        DetailExpandTextBox.Text = box.Text;
+        DetailExpandTextBox.MinWidth = box.ActualWidth;
+        DetailExpandPopup.PlacementTarget = box;
+        DetailExpandPopup.IsOpen = true;
+    }
+
+    private void DetailTextBox_MouseLeave(object sender, MouseEventArgs e)
+    {
+        // Deferred: when the pointer moves onto the overlay itself, keep it open.
+        Dispatcher.BeginInvoke(DispatcherPriority.Input, () =>
+        {
+            if (!DetailExpandTextBox.IsMouseOver)
+                DetailExpandPopup.IsOpen = false;
+        });
+    }
+
+    private void DetailExpandTextBox_MouseLeave(object sender, MouseEventArgs e)
+    {
+        DetailExpandPopup.IsOpen = false;
     }
 
     private void ProcessGrid_Sorting(object sender, DataGridSortingEventArgs e)

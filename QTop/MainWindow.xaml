@@ -7,6 +7,7 @@
         MinWidth="940"
         MinHeight="620"
         ResizeMode="CanResizeWithGrip"
+        UseLayoutRounding="True"
         Background="{StaticResource WindowBrush}"
         WindowStartupLocation="CenterScreen"
         FontFamily="Segoe UI"
@@ -21,24 +22,6 @@
             <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
             <Setter Property="Margin" Value="0,0,0,1" />
         </Style>
-        <!-- Overlays the textbox in-place so a truncated value appears to simply extend. -->
-        <ToolTip x:Key="DetailOverflowToolTip"
-                 x:Shared="False"
-                 Placement="Relative"
-                 HorizontalOffset="0"
-                 VerticalOffset="0"
-                 HasDropShadow="False"
-                 Background="#F9FAFB"
-                 BorderBrush="{StaticResource CardBorderBrush}"
-                 BorderThickness="1"
-                 Padding="7,2,5,2"
-                 MinHeight="23"
-                 VerticalContentAlignment="Center"
-                 FontFamily="Segoe UI"
-                 FontSize="12"
-                 Foreground="{StaticResource TextBrush}"
-                 Content="{Binding PlacementTarget.Text, RelativeSource={RelativeSource Self}}" />
-
         <Style x:Key="DetailTextBox" TargetType="TextBox">
             <Setter Property="IsReadOnly" Value="True" />
             <Setter Property="FontSize" Value="12" />
@@ -50,13 +33,10 @@
             <Setter Property="MinHeight" Value="23" />
             <Setter Property="TextWrapping" Value="NoWrap" />
             <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
-            <Setter Property="ToolTipService.InitialShowDelay" Value="0" />
-            <Setter Property="ToolTipService.BetweenShowDelay" Value="0" />
-            <Setter Property="ToolTipService.ShowDuration" Value="60000" />
-            <Setter Property="ToolTip" Value="{StaticResource DetailOverflowToolTip}" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}" />
-            <EventSetter Event="ToolTipOpening" Handler="DetailTextBox_ToolTipOpening" />
+            <EventSetter Event="MouseEnter" Handler="DetailTextBox_MouseEnter" />
+            <EventSetter Event="MouseLeave" Handler="DetailTextBox_MouseLeave" />
         </Style>
 
         <Style x:Key="IconOnlyButton" TargetType="Button">
@@ -376,6 +356,28 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+
+            <!-- In-place expansion for truncated detail boxes: a real TextBox overlays the
+                 hovered one, so rendering matches exactly and the full text stays selectable. -->
+            <Popup x:Name="DetailExpandPopup"
+                   AllowsTransparency="True"
+                   Placement="Relative"
+                   HorizontalOffset="0"
+                   VerticalOffset="0">
+                <TextBox x:Name="DetailExpandTextBox"
+                         IsReadOnly="True"
+                         FontSize="12"
+                         Foreground="{StaticResource TextBrush}"
+                         Background="#F9FAFB"
+                         BorderBrush="{StaticResource CardBorderBrush}"
+                         BorderThickness="1"
+                         Padding="5,2"
+                         MinHeight="23"
+                         TextWrapping="NoWrap"
+                         VerticalContentAlignment="Center"
+                         CaretBrush="{StaticResource AccentBrush}"
+                         MouseLeave="DetailExpandTextBox_MouseLeave" />
+            </Popup>
 
             <ListBox Grid.Row="0"
                      ItemsSource="{Binding CategoryFilters}"
