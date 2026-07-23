@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="QTop.Core/QTop.Core.csproj" />
+  <Project Path="QTop/QTop.csproj" />
+  <Project Path="QTop.Installer/QTop.Installer.wixproj" Type="b7dd6f7e-def8-4e67-b5b7-07ef123db6f0">
+    <Platform Project="x64" />
+    <!-- Excluded from solution builds; the MSI should be produced by a dedicated packaging step. -->
+    <Build Project="false" />
+  </Project>
+  <Project Path="QTop.Tests/QTop.Tests.csproj" />
+</Solution>
