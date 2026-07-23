@@ -53,7 +53,7 @@ public sealed class WindowsProcessProvider : IProcessProvider
         }
 
         PruneCpuSamples(snapshots);
-        return snapshots;
+        return ProcessCategorizer.PropagateAppCategory(snapshots);
     }
 
     private void PruneCpuSamples(List<ProcessSnapshot> snapshots)
