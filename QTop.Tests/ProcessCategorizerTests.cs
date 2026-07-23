@@ -49,6 +49,17 @@ public sealed class ProcessCategorizerTests
     }
 
     [TestMethod]
+    public void Categorize_ReturnsUnknown_WhenOnlyDetailsAreDenied()
+    {
+        var input = new ProcessClassificationInput
+        {
+            DetailsDenied = true
+        };
+
+        Assert.AreEqual(ProcessCategory.Unknown, ProcessCategorizer.Categorize(input));
+    }
+
+    [TestMethod]
     public void PropagateAppCategory_PromotesBackgroundDescendantsOfApps()
     {
         var snapshots = new ProcessSnapshot[]

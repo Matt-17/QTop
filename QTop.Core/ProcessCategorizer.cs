@@ -12,9 +12,13 @@ public static class ProcessCategorizer
 
         if (input.IsSessionZero ||
             input.IsWindowsOwned ||
-            input.IsKnownSystemProcess ||
-            input.DetailsDenied)
+            input.IsKnownSystemProcess)
             return ProcessCategory.WindowsSystem;
+
+        // Access denied alone does not make a process a Windows component; sandboxed or
+        // otherwise ACL-restricted user processes land here too.
+        if (input.DetailsDenied)
+            return ProcessCategory.Unknown;
 
         return ProcessCategory.Background;
     }

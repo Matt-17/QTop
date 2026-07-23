@@ -6,6 +6,14 @@ namespace QTop;
 
 public sealed class MainWindowViewModel : ObservableObject
 {
+    // Nearly every service/system process descends from these supervisors; nesting them
+    // all under one node makes the tree useless, so their children stay top-level.
+    private static readonly HashSet<string> FlattenedParentNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "services",
+        "wininit"
+    };
+
     private readonly IProcessProvider _processProvider;
     private readonly List<ProcessRowViewModel> _allRows = [];
     private readonly List<ProcessRowViewModel> _rootRows = [];
@@ -312,6 +320,7 @@ public sealed class MainWindowViewModel : ObservableObject
             if (row.ParentProcessId is int parentId &&
                 parentId != row.ProcessId &&
                 byPid.TryGetValue(parentId, out ProcessRowViewModel? parent) &&
+                !FlattenedParentNames.Contains(parent.ProcessName) &&
                 !IsInAncestorChain(row, parent))
             {
                 row.Parent = parent;
