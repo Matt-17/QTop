@@ -437,14 +437,7 @@ public sealed class MainWindowViewModel : ObservableObject
         }
 
         for (int index = 0; index < optionCount; index++)
-        {
-            CategoryFilterOption option = CategoryFilters[index];
-            // Empty category pills are hidden; "All categories" and the active pill always stay.
-            bool isVisible = option.Category is null ||
-                             optionCounts[index] > 0 ||
-                             ReferenceEquals(option, SelectedCategoryFilter);
-            option.UpdateStats(optionCounts[index], optionCpu[index], isVisible);
-        }
+            CategoryFilters[index].UpdateStats(optionCounts[index], optionCpu[index]);
 
         foreach (ProcessRowViewModel root in _rootRows)
             ComputeSubtreeMatches(root);
