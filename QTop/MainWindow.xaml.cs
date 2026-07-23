@@ -23,8 +23,14 @@ public partial class MainWindow : Window
         InitializeComponent();
         _viewModel = new MainWindowViewModel(new WindowsProcessProvider())
         {
-            ConfirmBeforeKill = _settings.ConfirmBeforeKill
+            ConfirmBeforeKill = _settings.ConfirmBeforeKill,
+            HideProtectedSystem = _settings.HideProtectedSystem
         };
+        CategoryFilterOption? savedFilter = _viewModel.CategoryFilters
+            .FirstOrDefault(option => option.Category?.ToString() == _settings.SelectedCategory);
+        if (savedFilter is not null)
+            _viewModel.SelectedCategoryFilter = savedFilter;
+
         DataContext = _viewModel;
 
         _refreshTimer = new DispatcherTimer(DispatcherPriority.Background)
@@ -132,9 +138,13 @@ public partial class MainWindow : Window
         if (e.PropertyName == nameof(MainWindowViewModel.SelectedRefreshInterval))
             ApplyRefreshInterval();
 
-        if (e.PropertyName == nameof(MainWindowViewModel.ConfirmBeforeKill))
+        if (e.PropertyName is nameof(MainWindowViewModel.ConfirmBeforeKill)
+            or nameof(MainWindowViewModel.HideProtectedSystem)
+            or nameof(MainWindowViewModel.SelectedCategoryFilter))
         {
             _settings.ConfirmBeforeKill = _viewModel.ConfirmBeforeKill;
+            _settings.HideProtectedSystem = _viewModel.HideProtectedSystem;
+            _settings.SelectedCategory = _viewModel.SelectedCategoryFilter.Category?.ToString();
             _settings.Save();
         }
     }

@@ -14,6 +14,10 @@ public sealed class AppSettings
 
     public bool ConfirmBeforeKill { get; set; }
 
+    public bool HideProtectedSystem { get; set; } = true;
+
+    public string? SelectedCategory { get; set; }
+
     public static AppSettings Load()
     {
         try
